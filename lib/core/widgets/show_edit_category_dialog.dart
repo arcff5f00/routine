@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../presentation/menu/categories/categories_model.dart';
 import '../colors.dart';
 import '../icons.dart';
+import '../strings.dart';
+import 'custom_button.dart';
+import 'custom_text_field.dart';
 
 void showEditCategoryDialog(BuildContext context, CategoryModel category,
     Function(CategoryModel) onEdit, Function(String) onDelete) {
@@ -29,6 +31,14 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
   final ScrollController iconScrollController = ScrollController();
   final ScrollController colorScrollController = ScrollController();
 
+  final RxString errorText = ''.obs;
+
+  nameController.addListener(() {
+    if (errorText.value.isNotEmpty) {
+      errorText.value = ''; // Clear the error text
+    }
+  });
+
   Get.dialog(
     Dialog(
       child: ConstrainedBox(
@@ -37,7 +47,7 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
           maxWidth: 400,
         ),
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 32),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,85 +56,49 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Edit Category',
+                    AppStrings.editCategories,
                     style: GoogleFonts.inter(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  if (!category.isDefault)
-                    IconButton(
-                      icon: Icon(
-                        Icons.delete,
-                        color: theme.colorScheme.error,
-                      ),
-                      onPressed: () {
-                        Get.dialog(
-                          AlertDialog(
-                            title: Text(
-                              'Delete Category',
-                              style: GoogleFonts.inter(
-                                color: theme.colorScheme.error,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            content: Text(
-                              'Are you sure you want to delete this category?',
-                              style: GoogleFonts.inter(
-                                color: theme.colorScheme.onBackground,
-                              ),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Get.back(),
-                                child: Text(
-                                  'Cancel',
-                                  style: GoogleFonts.inter(
-                                    color: theme.colorScheme.onBackground,
-                                  ),
-                                ),
-                              ),
-                              TextButton(
-                                onPressed: () {
-                                  onDelete(category.id);
-                                  Get.back(); // Close confirmation dialog
-                                  Get.back(); // Close edit dialog
-                                },
-                                child: Text(
-                                  'Delete',
-                                  style: GoogleFonts.inter(
-                                    color: theme.colorScheme.error,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
+                  IconButton(
+                    icon: Icon(
+                      size: 24,
+                      Icons.cancel_outlined,
+                      color: theme.colorScheme.onSurface,
                     ),
+                    onPressed: () => Get.back(),
+                  ),
                 ],
               ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: nameController,
-                decoration: InputDecoration(
-                  labelText: 'Category Name',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ),
-              ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
+              Obx(() => CustomTextField(
+                    controller: nameController,
+                    hintText: AppStrings.categoryNew,
+                    fillColor: Colors.transparent,
+                    borderColor: theme.colorScheme.secondary,
+                    textColor: theme.colorScheme.onBackground,
+                    focusedBorderColor: theme.colorScheme.primary,
+                    enabledBorderColor: theme.colorScheme.secondary,
+                    hintTextColor:
+                        theme.colorScheme.onBackground.withOpacity(0.4),
+                    errorBorderColor: Colors.red,
+                    errorText: errorText.value.isEmpty ? null : errorText.value,
+                    isInputValid: false,
+                    hintTextSize: 12,
+                  )),
+              const SizedBox(height: 32),
               Text(
-                'Select Color',
+                AppStrings.selectColor,
                 style: GoogleFonts.inter(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 8),
-              SizedBox(
-                height: 50,
+              Container(
+                height: 50, // Fixed height for the list
                 child: ListView.builder(
                   controller: colorScrollController,
                   scrollDirection: Axis.horizontal,
@@ -132,7 +106,7 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                   itemBuilder: (context, index) {
                     final color = AppColors.categoryColors[index];
                     return Obx(() => Padding(
-                          padding: const EdgeInsets.only(right: 8),
+                          padding: const EdgeInsets.only(right: 6),
                           child: InkWell(
                             splashColor:
                                 theme.colorScheme.primary.withOpacity(0.2),
@@ -141,16 +115,29 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                             borderRadius: BorderRadius.circular(30),
                             onTap: () => selectedColor.value = color.color,
                             child: Container(
-                              width: 40,
-                              height: 40,
+                              width: 50, // Width of the outer container
+                              height: 50, // Height of the outer container
                               decoration: BoxDecoration(
-                                color: color.color,
-                                shape: BoxShape.circle,
+                                borderRadius: BorderRadius.circular(4),
+                                shape: BoxShape.rectangle,
                                 border: Border.all(
                                   color: selectedColor.value == color.color
                                       ? theme.colorScheme.primary
                                       : Colors.transparent,
                                   width: 2,
+                                ),
+                              ),
+                              child: Padding(
+                                // Add padding between the border and the color box
+                                padding: selectedColor.value == color.color
+                                    ? const EdgeInsets.all(
+                                        2) // Space between border and color when selected
+                                    : EdgeInsets.zero,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: color.color,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
                                 ),
                               ),
                             ),
@@ -159,11 +146,11 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                   },
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               Text(
-                'Select Icon',
+                AppStrings.selectIcon,
                 style: GoogleFonts.inter(
-                  fontSize: 16,
+                  fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -186,7 +173,7 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                             child: Text(
                               entry.key,
                               style: GoogleFonts.inter(
-                                fontSize: 14,
+                                fontSize: 12,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
@@ -194,8 +181,8 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Wrap(
-                              spacing: 12,
-                              runSpacing: 12,
+                              spacing: 14,
+                              runSpacing: 14,
                               children: entry.value.map((icon) {
                                 return Obx(() => InkWell(
                                       splashColor: theme.colorScheme.primary
@@ -220,10 +207,11 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                                               BorderRadius.circular(4),
                                         ),
                                         child: Icon(
+                                          size: 20,
                                           icon,
                                           color: selectedIcon.value == icon
-                                              ? theme.colorScheme.primary
-                                              : theme.colorScheme.onBackground,
+                                              ? theme.colorScheme.onBackground
+                                              : theme.colorScheme.onSecondary,
                                         ),
                                       ),
                                     ));
@@ -236,30 +224,71 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                   ),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 32),
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  TextButton(
-                    onPressed: () => Get.back(),
-                    child: Text(
-                      'Cancel',
-                      style: GoogleFonts.inter(
-                        color: theme.colorScheme.onBackground,
-                      ),
+                  if (!category.isDefault)
+                    CustomButton(
+                      textPadding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 8),
+                      onPressed: () {
+                        Get.dialog(
+                          AlertDialog(
+                            contentPadding: const EdgeInsets.only(
+                                left: 20, right: 20, top: 14, bottom: 32),
+                            title: Text(
+                              AppStrings.deleteCategory,
+                              style: GoogleFonts.inter(
+                                fontSize: 18,
+                                color: theme.colorScheme.onBackground,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            content: Text(
+                              AppStrings.deleteConfirm,
+                              style: GoogleFonts.inter(
+                                fontSize: 14,
+                                color: theme.colorScheme.onBackground
+                                    .withOpacity(0.5),
+                              ),
+                            ),
+                            actions: [
+                              CustomButton(
+                                textPadding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 8),
+                                onPressed: () => Get.back(),
+                                text: AppStrings.buttonCancel,
+                                color: theme.colorScheme.surface,
+                                textColor: theme.colorScheme.onBackground,
+                              ),
+                              CustomButton(
+                                textPadding: const EdgeInsets.symmetric(
+                                    horizontal: 24, vertical: 8),
+                                onPressed: () {
+                                  onDelete(category.id);
+                                  Get.back(); // Close confirmation dialog
+                                  Get.back();
+                                },
+                                text: AppStrings.buttonDelete,
+                                color: Colors.red.withOpacity(1),
+                                textColor: theme.colorScheme.onSurface,
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                      text: AppStrings.buttonDelete,
+                      color: Colors.red.withOpacity(1),
+                      textColor: theme.colorScheme.onSurface,
                     ),
-                  ),
                   const SizedBox(width: 8),
-                  ElevatedButton(
+                  CustomButton(
+                    textPadding:
+                        const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                     onPressed: () {
                       if (nameController.text.isEmpty) {
-                        Fluttertoast.showToast(
-                            msg: "Enter the Category name",
-                            toastLength: Toast.LENGTH_SHORT,
-                            gravity: ToastGravity.BOTTOM,
-                            timeInSecForIosWeb: 1,
-                            textColor: Colors.white,
-                            fontSize: 16.0);
+                        errorText.value = "Enter the Category name";
                         return;
                       }
 
@@ -272,7 +301,7 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                             toastLength: Toast.LENGTH_SHORT,
                             gravity: ToastGravity.BOTTOM,
                             timeInSecForIosWeb: 1,
-                            textColor: Colors.white,
+                            textColor: theme.colorScheme.onBackground,
                             fontSize: 16.0);
                         return;
                       }
@@ -288,18 +317,9 @@ void showEditCategoryDialog(BuildContext context, CategoryModel category,
                       onEdit(editedCategory);
                       Get.back();
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: theme.colorScheme.primary,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                    child: Text(
-                      'Save',
-                      style: GoogleFonts.inter(
-                        color: theme.colorScheme.onPrimary,
-                      ),
-                    ),
+                    text: AppStrings.buttonSave,
+                    color: theme.colorScheme.primary,
+                    textColor: theme.colorScheme.onPrimary,
                   ),
                 ],
               ),

@@ -299,7 +299,7 @@ class CategoriesScreen extends GetView<CategoryController> {
               onPressed: () => showAddCategoryDialog(context, (category) {
                 controller.addCustomCategory(category);
               }),
-              text: AppStrings.buttonCategory,
+              text: AppStrings.categoryNew,
               color: theme.colorScheme.primary,
               textColor: theme.colorScheme.onPrimary,
             ),

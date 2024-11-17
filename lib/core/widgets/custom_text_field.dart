@@ -13,6 +13,7 @@ class CustomTextField extends StatelessWidget {
   final String? errorText;
   final bool isInputValid;
   final Color errorBorderColor;
+  final double hintTextSize; // New parameter for hint text size
 
   const CustomTextField({
     super.key,
@@ -27,6 +28,7 @@ class CustomTextField extends StatelessWidget {
     this.errorText,
     required this.isInputValid,
     required this.errorBorderColor,
+    this.hintTextSize = 16, // Default size for hint text if not provided
   });
 
   @override
@@ -50,11 +52,15 @@ class CustomTextField extends StatelessWidget {
       ),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: GoogleFonts.inter(color: hintTextColor.withOpacity(0.5)),
+        hintStyle: GoogleFonts.inter(
+          fontWeight: FontWeight.w500,
+          color: hintTextColor.withOpacity(0.5),
+          fontSize: hintTextSize, // Use the hintTextSize variable here
+        ),
         filled: true,
         fillColor: fillColor,
         contentPadding:
-        const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
+            const EdgeInsets.symmetric(vertical: 10.0, horizontal: 10.0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(6),
           borderSide: BorderSide(color: getBorderColor(), width: 1.5),

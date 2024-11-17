@@ -105,7 +105,7 @@ class OnboardingController extends GetxController {
     Map<Permission, PermissionStatus> statuses = await [
       Permission.storage,
       Permission.notification,
-      Permission.calendar,
+      Permission.calendarFullAccess,
     ].request();
 
     statuses.forEach((permission, status) {

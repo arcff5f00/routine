@@ -96,7 +96,8 @@ class NameScreenState extends State<NameScreen> {
                       ? () {
                           // Show toast message
                           Fluttertoast.showToast(
-                              msg: "Welcome ${controller.username} ! 🎉",
+                              msg:
+                                  "🎉 Welcome to Routine, ${controller.username}!",
                               toastLength: Toast.LENGTH_SHORT,
                               gravity: ToastGravity.BOTTOM,
                               fontSize: 16.0);

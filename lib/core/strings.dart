@@ -41,7 +41,10 @@ class AppStrings {
   static const String buttonSkip = "Skip";
   static const String buttonComplete = "Finish";
   static const String buttonGrant = "Grant Permissions";
-  static const String buttonCategory = "New Category";
+  static const String buttonCancel = "Cancel";
+  static const String buttonAdd = "Add";
+  static const String buttonSave = "Save";
+  static const String buttonDelete = "Delete";
 
   //Name Screen
   static const String name = "Name";
@@ -68,10 +71,6 @@ class AppStrings {
   //menu
   static const String menu = "Menu";
   static const String points = "Routine points";
-  static const String categories = "Categories";
-  static const String defaultCategories = "Default Categories";
-  static const String customCategories = "Custom Categories";
-  static const String addCategories = "Add new custom category";
   static const String customize = "Customize";
   static const String settings = "Settings";
   static const String backup = "Backup";
@@ -89,7 +88,21 @@ class AppStrings {
   static const String accent = "Select Accent Color";
 
   //settings
-
   static const String notification = "Notification Settings";
   static const String alarm = "Alarm Settings";
+
+  //categories
+  static const String categories = "Categories";
+  static const String defaultCategories = "Default Categories";
+  static const String customCategories = "Custom Categories";
+  static const String addCategories = "Add Custom Category";
+  static const String editCategories = "Edit Category";
+  static const String categoryNew = "New Category";
+  static const String categoryName = "Category Name";
+  static const String selectColor = "Select Color";
+  static const String selectIcon = "Select Icon";
+
+  //delete category
+  static const String deleteCategory = "Delete Category";
+  static const String deleteConfirm = "Are you sure you want to delete this category?";
 }
